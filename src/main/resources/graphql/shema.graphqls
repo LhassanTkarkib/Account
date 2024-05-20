@@ -1,0 +1,17 @@
+type Account {
+    id: ID!
+    accountNumber: String!
+    balance: Float!
+    createdDate: String!
+}
+
+type Query {
+    account(id: ID!): Account
+    accounts: [Account]
+}
+
+type Mutation {
+    createAccount(accountNumber: String!, balance: Float!, createdDate: String!): Account
+    updateAccount(id: ID!, accountNumber: String, balance: Float, createdDate: String): Account
+    deleteAccount(id: ID!): Boolean
+}

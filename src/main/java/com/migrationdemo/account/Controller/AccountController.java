@@ -1,14 +1,21 @@
 package com.migrationdemo.account.Controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.migrationdemo.account.DTOs.AccountEntityDto;
+import com.migrationdemo.account.Service.IAccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
-@RestController
+import java.util.List;
+
+@Controller
 public class AccountController {
 
-    @GetMapping("/account")
-public String GenrateAccountNumber() {
-    return "Account Number is 123456789";
-}
+    @Autowired
+    private IAccountService accountService;
 
+    @QueryMapping
+    List<AccountEntityDto> all() {
+        return accountService.getAllAccounts();
+    }
 }
