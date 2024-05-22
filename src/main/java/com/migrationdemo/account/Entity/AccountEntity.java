@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -31,8 +30,8 @@ public class AccountEntity {
     @Column(name = "balance")
     private double balance;
 
-    @Column(name = "created_date")
-    private LocalDate createdDate;
+    @Column(name = "UserId")
+    private Long UserId;
 
 
 }

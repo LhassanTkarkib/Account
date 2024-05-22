@@ -1,17 +1,17 @@
-type Account {
-    id: ID!
-    accountNumber: String!
-    balance: Float!
-    createdDate: String!
-}
-
 type Query {
-    account(id: ID!): Account
     accounts: [Account]
 }
 
+type Account {
+    id: ID!
+    userId: ID!
+    accountNumber: String!
+    balance: Float!
+}
+
+
 type Mutation {
-    createAccount(accountNumber: String!, balance: Float!, createdDate: String!): Account
-    updateAccount(id: ID!, accountNumber: String, balance: Float, createdDate: String): Account
+    createAccount(userId:ID!,accountNumber: String!, balance: Float!): Account
+    updateAccount(id: ID!, accountNumber: String, balance: Float): Account
     deleteAccount(id: ID!): Boolean
 }
