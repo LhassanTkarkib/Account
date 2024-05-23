@@ -5,12 +5,16 @@ import com.migrationdemo.account.Entity.AccountEntity;
 import com.migrationdemo.account.Mapper.AccountEntityMapper;
 import com.migrationdemo.account.Repository.AccountRepository;
 import com.migrationdemo.account.Service.IAccountService;
+import com.migrationdemo.feignclient.UserClient;
+import com.migrationdemo.feignclient.UserEntityDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class AccountService implements IAccountService {
 
@@ -20,6 +24,10 @@ public class AccountService implements IAccountService {
     @Autowired
     private AccountEntityMapper accountEntityMapper;
 
+    @Autowired
+    private UserClient userClient;
+
+
     @Override
     public AccountEntity getAccountById(Long id) {
         return accountRepository.findById(id).orElse(null);
@@ -27,7 +35,13 @@ public class AccountService implements IAccountService {
 
     @Override
     public AccountEntity createAccount(AccountEntity accountEntity) {
-        return accountRepository.save(accountEntity);
+        log.info("creating account for user with id: " + accountEntity.getUserId());
+        UserEntityDto user = userClient.getUsers(accountEntity.getUserId());
+        if (user == null) {
+            throw new RuntimeException("User with id " + accountEntity.getUserId() + " does not exist");
+        }else {
+            return accountRepository.save(accountEntity);
+        }
     }
 
     @Override

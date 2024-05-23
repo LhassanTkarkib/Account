@@ -26,6 +26,7 @@ public class AccountController {
     @MutationMapping
     AccountEntityDto createAccount(@Argument long userId ,@Argument String accountNumber, @Argument Float balance) {
         AccountEntityDto accountEntityDto = new AccountEntityDto();
+        accountEntityDto.setUserId(userId);
         accountEntityDto.setAccountNumber(accountNumber);
         accountEntityDto.setBalance(balance);
         return accountEntityMapper.toDto(accountService.createAccount(accountEntityMapper.toEntity(accountEntityDto)));
