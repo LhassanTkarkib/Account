@@ -3,6 +3,7 @@ package com.migrationdemo.account.Service.Implimentation;
 import com.migrationdemo.account.DTOs.AccountEntityDto;
 import com.migrationdemo.account.Entity.AccountEntity;
 import com.migrationdemo.account.Mapper.AccountEntityMapper;
+import com.migrationdemo.account.Producer.AccountProducer;
 import com.migrationdemo.account.Repository.AccountRepository;
 import com.migrationdemo.account.Service.IAccountService;
 import com.migrationdemo.feignclient.UserClient;
@@ -27,6 +28,9 @@ public class AccountService implements IAccountService {
     @Autowired
     private UserClient userClient;
 
+    @Autowired
+    private AccountProducer accountProducer;
+
 
     @Override
     public AccountEntity getAccountById(Long id) {
@@ -40,6 +44,13 @@ public class AccountService implements IAccountService {
         if (user == null) {
             throw new RuntimeException("User with id " + accountEntity.getUserId() + " does not exist");
         }else {
+            AccountEntityDto accountEntityDto = accountEntityMapper.toDto(accountEntity);
+
+            com.migrationdemo.feignclient.AccountEntityDto accountEntityDto1 = new com.migrationdemo.feignclient.AccountEntityDto();
+            accountEntityDto1.setUserId(accountEntityDto.getUserId());
+            accountEntityDto1.setAccountNumber(accountEntityDto.getAccountNumber());
+            accountEntityDto1.setBalance(accountEntityDto.getBalance());
+            accountProducer.sendMessage(accountEntityDto1);
             return accountRepository.save(accountEntity);
         }
     }

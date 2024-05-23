@@ -1,6 +1,6 @@
 package com.migrationdemo.account.Producer;
 
-import com.migrationdemo.account.DTOs.AccountEntityDto;
+import com.migrationdemo.feignclient.AccountEntityDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +13,9 @@ import org.springframework.stereotype.Service;
 @Service
 
 public class AccountProducer {
+//    @Value("${spring.kafka.topic.name}")
+//    private String topicName;
 
-    @Value("${spring.kafka.topic.name}")
-    private String topicName;
-//
     @Autowired
     private NewTopic topic;
 
