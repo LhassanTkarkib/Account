@@ -1,18 +1,19 @@
 package com.migrationdemo.account.Entity;
 
+import com.migrationdemo.account.Enums.CardType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table
-public class AccountEntity {
+public class CardsEntity {
+
     @Id
     @SequenceGenerator(
             name = "Account_sequence",
@@ -21,17 +22,20 @@ public class AccountEntity {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "Account_sequence")
-    private Long id;
+    private Long cardNumber;
 
-    @Column(name = "accountNumber")
-    private String accountNumber;
+    @Column(name = "cardType")
+    @Enumerated(EnumType.STRING)
+    private CardType cardType;
 
-    @Column(name = "balance")
-    private double balance;
+    @Column(name = "expiryDate")
+    private String expiryDate;
 
-    @Column(name = "UserId")
-    private Long UserId;
+    @Column(name = "cvv")
+    private int cvv;
 
-    @OneToMany(mappedBy = "accountEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CardsEntity> cards;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private AccountEntity accountEntity;
+
 }

@@ -1,7 +1,9 @@
 package com.migrationdemo.account.Service.Implimentation;
 
-import com.migrationdemo.account.DTOs.AccountEntityDto;
+import com.migrationdemo.account.DTOs.CardsEntityDto;
 import com.migrationdemo.account.Entity.AccountEntity;
+import com.migrationdemo.account.DTOs.AccountEntityDto;
+import com.migrationdemo.account.Entity.CardsEntity;
 import com.migrationdemo.account.Mapper.AccountEntityMapper;
 import com.migrationdemo.account.Producer.AccountProducer;
 import com.migrationdemo.account.Repository.AccountRepository;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +46,7 @@ public class AccountService implements IAccountService {
         UserEntityDto user = userClient.getUsers(accountEntity.getUserId());
         if (user == null) {
             throw new RuntimeException("User with id " + accountEntity.getUserId() + " does not exist");
-        }else {
+        } else {
             AccountEntityDto accountEntityDto = accountEntityMapper.toDto(accountEntity);
 
             com.migrationdemo.feignclient.AccountEntityDto accountEntityDto1 = new com.migrationdemo.feignclient.AccountEntityDto();
@@ -51,9 +54,23 @@ public class AccountService implements IAccountService {
             accountEntityDto1.setAccountNumber(accountEntityDto.getAccountNumber());
             accountEntityDto1.setBalance(accountEntityDto.getBalance());
             accountProducer.sendMessage(accountEntityDto1);
+
+            List<CardsEntity> cards = new ArrayList<>();
+            for (CardsEntityDto card : accountEntityDto.getCards()) {
+                CardsEntity newCard = new CardsEntity();
+                newCard.setCardNumber(card.getCardNumber());
+                newCard.setCardType(card.getCardType());
+                newCard.setCvv(card.getCvv());
+                newCard.setExpiryDate(card.getExpiryDate());
+                newCard.setAccountEntity(accountEntity);
+                cards.add(newCard);
+            }
+
+            accountEntity.setCards(cards);
             return accountRepository.save(accountEntity);
         }
     }
+
 
     @Override
     public AccountEntity updateAccount(AccountEntity accountEntity) {

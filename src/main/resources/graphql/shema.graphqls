@@ -2,16 +2,22 @@ type Query {
     accounts: [Account]
 }
 
+type Card {
+    cardNumber: ID!
+    cardType: String!
+    expiryDate: String!
+    cvv: Int!
+}
+
 type Account {
     id: ID!
     userId: ID!
     accountNumber: String!
     balance: Float!
+    cards: [Card]
 }
 
-
 type Mutation {
-    createAccount(userId:ID!,accountNumber: String!, balance: Float!): Account
-    updateAccount(id: ID!, accountNumber: String, balance: Float): Account
-    deleteAccount(id: ID!): Boolean
+    createAccount(userId:ID!, accountNumber: String!, balance: Float!, cardType: String!): Account
+
 }
