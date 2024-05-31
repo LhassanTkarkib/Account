@@ -1,23 +1,38 @@
-type Query {
-    accounts: [Account]
+enum CardType {
+    DEBIT
+    CREDIT
 }
 
-type Card {
-    cardNumber: ID!
-    cardType: String!
-    expiryDate: String!
-    cvv: Int!
+input CardInput {
+    cardType: CardType!
+}
+
+input AccountInput {
+    userId: ID!
+    accountNumber: String!
+    balance: Float!
+    cards: [CardInput!]
 }
 
 type Account {
     id: ID!
-    userId: ID!
     accountNumber: String!
     balance: Float!
-    cards: [Card]
+    userId: ID!
+    cards: [Card!]
+}
+
+type Card {
+    cardNumber: String!
+    cardType: CardType!
+    expiryDate: String!
+    cvv: Int!
+}
+
+type Query {
+    account(id: ID!): Account
 }
 
 type Mutation {
-    createAccount(userId:ID!, accountNumber: String!, balance: Float!, cardType: String!): Account
-
+    createAccount(account: AccountInput!): Account!
 }

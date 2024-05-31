@@ -16,13 +16,16 @@ public class CardsEntity {
 
     @Id
     @SequenceGenerator(
-            name = "Account_sequence",
-            sequenceName = "Account_sequence",
+            name = "Card_sequence",
+            sequenceName = "Card_sequence",
             allocationSize = 1)
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "Account_sequence")
-    private Long cardNumber;
+            generator = "Card_sequence")
+    private Long CardID;
+
+    @Column(name = "cardNumber")
+    private String cardNumber;
 
     @Column(name = "cardType")
     @Enumerated(EnumType.STRING)

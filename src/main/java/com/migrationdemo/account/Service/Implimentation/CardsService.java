@@ -32,7 +32,7 @@ public class CardsService implements ICardsService {
         String expiryDate = LocalDate.now().plusYears(10).format(DateTimeFormatter.ofPattern("MM/yy"));
 
         CardsEntity newCard = new CardsEntity();
-        newCard.setCardNumber(Long.parseLong(cardNumber));
+        newCard.setCardNumber(cardNumber);
         newCard.setCardType(cardType);
         newCard.setCvv(Integer.parseInt(cvv));
         newCard.setExpiryDate(expiryDate);

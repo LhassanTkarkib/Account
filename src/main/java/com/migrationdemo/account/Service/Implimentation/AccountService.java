@@ -1,6 +1,7 @@
 package com.migrationdemo.account.Service.Implimentation;
 
-import com.migrationdemo.account.DTOs.CardsEntityDto;
+import com.migrationdemo.account.DTOs.AccountInput;
+import com.migrationdemo.account.DTOs.CardInput;
 import com.migrationdemo.account.Entity.AccountEntity;
 import com.migrationdemo.account.DTOs.AccountEntityDto;
 import com.migrationdemo.account.Entity.CardsEntity;
@@ -14,8 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,34 +45,45 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public AccountEntity createAccount(AccountEntity accountEntity) {
-        log.info("creating account for user with id: " + accountEntity.getUserId());
-        UserEntityDto user = userClient.getUsers(accountEntity.getUserId());
+    public AccountEntity createAccount(AccountInput accountInput) {
+        log.info("Creating account for user with id: " + accountInput.getUserId());
+
+        UserEntityDto user = userClient.getUsers(accountInput.getUserId());
         if (user == null) {
-            throw new RuntimeException("User with id " + accountEntity.getUserId() + " does not exist");
-        } else {
-            AccountEntityDto accountEntityDto = accountEntityMapper.toDto(accountEntity);
-
-            com.migrationdemo.feignclient.AccountEntityDto accountEntityDto1 = new com.migrationdemo.feignclient.AccountEntityDto();
-            accountEntityDto1.setUserId(accountEntityDto.getUserId());
-            accountEntityDto1.setAccountNumber(accountEntityDto.getAccountNumber());
-            accountEntityDto1.setBalance(accountEntityDto.getBalance());
-            accountProducer.sendMessage(accountEntityDto1);
-
-            List<CardsEntity> cards = new ArrayList<>();
-            for (CardsEntityDto card : accountEntityDto.getCards()) {
-                CardsEntity newCard = new CardsEntity();
-                newCard.setCardNumber(card.getCardNumber());
-                newCard.setCardType(card.getCardType());
-                newCard.setCvv(card.getCvv());
-                newCard.setExpiryDate(card.getExpiryDate());
-                newCard.setAccountEntity(accountEntity);
-                cards.add(newCard);
-            }
-
-            accountEntity.setCards(cards);
-            return accountRepository.save(accountEntity);
+            throw new RuntimeException("User with id " + accountInput.getUserId() + " does not exist");
         }
+
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setUserId(accountInput.getUserId());
+        accountEntity.setAccountNumber(accountInput.getAccountNumber());
+        accountEntity.setBalance(accountInput.getBalance());
+
+
+        List<CardsEntity> cards = new ArrayList<>();
+        for (CardInput cardInput : accountInput.getCards()) {
+            CardsEntity newCard = new CardsEntity();
+            newCard.setCardType(cardInput.getCardType());
+            newCard.setCardNumber(generateCardNumber());
+            newCard.setCvv(generateCvv());
+            newCard.setExpiryDate(generateExpiryDate());
+            newCard.setAccountEntity(accountEntity);
+            cards.add(newCard);
+        }
+        accountEntity.setCards(cards);
+
+        return accountRepository.save(accountEntity);
+    }
+
+    private String generateCardNumber() {
+        return String.format("%016d", new Random().nextInt(Integer.MAX_VALUE));
+    }
+
+    private int generateCvv() {
+        return new Random().nextInt(900) + 100;
+    }
+
+    private String generateExpiryDate() {
+        return LocalDate.now().plusYears(10).format(DateTimeFormatter.ofPattern("MM/yy"));
     }
 
 

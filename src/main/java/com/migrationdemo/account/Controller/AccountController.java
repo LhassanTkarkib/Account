@@ -1,6 +1,7 @@
 package com.migrationdemo.account.Controller;
 
 import com.migrationdemo.account.DTOs.AccountEntityDto;
+import com.migrationdemo.account.DTOs.AccountInput;
 import com.migrationdemo.account.Enums.CardType;
 import com.migrationdemo.account.Mapper.AccountEntityMapper;
 import com.migrationdemo.account.Service.IAccountService;
@@ -19,17 +20,8 @@ public class AccountController {
     @Autowired
     private AccountEntityMapper accountEntityMapper;
 
-    @QueryMapping
-    Iterable <AccountEntityDto> accounts() {
-        return accountService.getAllAccounts();
-    }
-
     @MutationMapping
-    AccountEntityDto createAccount(@Argument long userId , @Argument String accountNumber, @Argument Float balance, @Argument CardType cardType) {
-        AccountEntityDto accountEntityDto = new AccountEntityDto();
-        accountEntityDto.setUserId(userId);
-        accountEntityDto.setAccountNumber(accountNumber);
-        accountEntityDto.setBalance(balance);
-        return accountEntityMapper.toDto(accountService.createAccount(accountEntityMapper.toEntity(accountEntityDto)));
+    public AccountEntityDto createAccount(@Argument("account") AccountInput accountInput) {
+        return accountEntityMapper.toDto(accountService.createAccount(accountInput));
     }
 }
